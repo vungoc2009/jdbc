@@ -1,5 +1,6 @@
 package Service;
 
+import ConnectData.ConnectData;
 import Entity.BusLine;
 import Entity.BusLineDetail;
 import Entity.Driver;
@@ -7,11 +8,10 @@ import Entity.DriverAssignment;
 
 import Main.MainRun;
 
+import java.sql.*;
 import java.util.*;
 
 public class AssigmentList {
-    public static final String file = "src/Assigment.dat";
-
     public static Driver inputDriver() {
         int id =0;
         Driver driver = null;
@@ -110,6 +110,7 @@ public class AssigmentList {
                 }while (true);
 
                 busLineDetails.add(new BusLineDetail(busLine,temp));
+                writeData(driver.getId() , busLine.getId(),turnNumber);
             }
             DriverAssignment driverAssignment = new DriverAssignment(driver , busLineDetails);
             MainRun.driverAssignments.add(driverAssignment);
@@ -135,5 +136,46 @@ public class AssigmentList {
             if(busLineDetails.get(i).getBusLine().getId() == idBusLine) return true;
         }
         return false;
+    }
+
+
+    // ghi data
+    public  void writeData (int idDirver , int idRoute , int quantity){
+        String sql ="INSERT INTO Assigment (id , idDriver ,idRoutr ,quantity"
+                    + "Values(?,?,?)";
+        try{
+            Connection connection = ConnectData.connection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+
+                statement.setInt(1,idDirver);
+                statement.setInt(2,idRoute);
+                statement.setInt(3,quantity);
+                connection.close();
+                statement.close();
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    public void readData () {
+        String sql = "Select * from Assigment ";
+        try{
+            Connection connection = ConnectData.connection();
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()){
+                int idDriver = rs.getInt(1);
+                int idRoute = rs.getInt(2);
+                int quantity = rs.getInt(3);
+                Driver driver = new Driver(idDriver);
+                BusLine busLine = new BusLine(idRoute);
+                BusLineDetail busLineDetail = new BusLineDetail(busLine,quantity);
+                DriverAssignment driverAssignment = new DriverAssignment(driver, (List<BusLineDetail>) busLineDetail);
+                MainRun.driverAssignments.add(driverAssignment);
+            }
+            connection.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

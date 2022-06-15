@@ -1,15 +1,10 @@
 package Main;
 
-import ConnectData.ConnectData;
 import Entity.BusLine;
 import Entity.Driver;
 import Entity.DriverAssignment;
 import Service.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -26,6 +21,9 @@ public class MainRun {
         AssigmentList assigmentList = new AssigmentList();
         Sort sort = new Sort();
         StatisticalDistance statisticalDistance = new StatisticalDistance();
+        driverService.readData();
+        busLineService.readata();
+        assigmentList.readData();
         int option = 0;
         while (true) {
             System.out.println("mời bạn nhập lựa chọn");
