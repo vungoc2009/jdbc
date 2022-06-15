@@ -34,25 +34,12 @@ public class BusLineService implements GeneralMethod{
     public static void inserIntoBusLine(BusLine busLine){
         String sql = "INSERT INTO route( id,distance , numberofstops)"
                 + "VALUES(?,?,?)";
-        int count =0;
-        String sql1 = "Select * from route";
-        try{
-            Connection connection = ConnectData.connection();
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(sql1);
-            while (rs.next()){
-                count ++;
-            }
-            connection.close();
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+
         try{
 
             Connection connection = ConnectData.connection();
             PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setInt(1,count+100);
+                statement.setInt(1,busLine.getId());
                 statement.setDouble(2,busLine.getDistance());
                 statement.setInt(3,busLine.getNumberStop());
                 statement.executeUpdate();
@@ -64,23 +51,29 @@ public class BusLineService implements GeneralMethod{
         }
     }
 
-
-    @Override
-    public void show() {
+    public void readata () {
         String sql = "Select * from route";
         try{
             Connection connection = ConnectData.connection();
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()){
-                System.out.println("id " + rs.getInt(1));
-                System.out.println("Distance "+rs.getDouble(2));
-                System.out.println("NumberStop "+rs.getInt(3));
+                int id = rs.getInt(1);
+                Double Distance = rs.getDouble(2);
+                int NumberStop = rs.getInt(3);
+                BusLine busLine = new BusLine(id , Distance , NumberStop);
+                MainRun.busLines.add(busLine);
             }
             connection.close();
             statement.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }
+    }
+    @Override
+    public void show() {
+        for (BusLine busLine :MainRun.busLines) {
+            System.out.println(busLine);
         }
     }
 

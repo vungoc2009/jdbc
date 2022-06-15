@@ -1,24 +1,27 @@
 package Entity;
 
+import ConnectData.ConnectData;
+
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class BusLine  implements Serializable {
-    public static int autoId = -1;
+
     private int id;
     private double distance;
     private int numberStop;
 
     public BusLine(){
-        if(autoId == -1){
-            autoId = 100;
-            id = autoId;
-            return;
-        }
-        this.id = autoId;
-    }
 
+    }
+    public BusLine(int id){
+        this.id = id;
+    }
     public BusLine(int id, double distance, int numberStop) {
         this.id = id;
         this.distance = distance;
@@ -48,7 +51,21 @@ public class BusLine  implements Serializable {
         this.numberStop = numberStop;
     }
     public void inputBusLine(){
-        this.id = BusLine.autoId++;
+        int count =0;
+        String sql1 = "Select * from route";
+        try{
+            Connection connection = ConnectData.connection();
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(sql1);
+            while (rs.next()){
+                count ++;
+            }
+            connection.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        this.id = 100+count;
         do{
             try {
                 System.out.print("Nhập thông khoảng cách: ");

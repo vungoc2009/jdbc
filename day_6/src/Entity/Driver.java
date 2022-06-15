@@ -1,6 +1,12 @@
 package Entity;
 
+import ConnectData.ConnectData;
+
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -13,9 +19,9 @@ public class Driver extends People implements Serializable {
     private int id;
     private String level;
 
-    public static int autoId = -1;
-
-
+    public Driver(int id){
+        this.id = id;
+    }
     public Driver(int id, String level) {
         this.id = id;
         this.level = level;
@@ -43,25 +49,25 @@ public class Driver extends People implements Serializable {
         this.level = level;
     }
 
-    public static int getAutoId() {
-        return autoId;
-    }
-
-    public static void setAutoId(int autoId) {
-        Driver.autoId = autoId;
-    }
-
     public Driver() {
-        if (autoId == -1) {
-            autoId = 10000;
-            id = autoId;
-            return;
-        }
-        this.id = autoId;
     }
 
     public void inputDriver() {
-        this.id = autoId++;
+        String sql1 = "Select * from driver";
+        int count =0;
+        try{
+            Connection connection = ConnectData.connection();
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(sql1);
+            while (rs.next()){
+                count ++;
+            }
+            connection.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        this.id = 10000 + count;
         super.inputPeople();
         System.out.println("Nhập loại trinhg đọ lái xe ");
         System.out.println("1: trình độ A");

@@ -12,6 +12,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class DriverService implements GeneralMethod{
+
     @Override
     public void createNew() {
         System.out.print("nhập số lượng lái xe");
@@ -38,24 +39,10 @@ public class DriverService implements GeneralMethod{
     public static void inserIntoDriver(Driver driver){
         String sql = "INSERT INTO driver( id,fullName ,address ,phone,levele)"
                 + "VALUES(?,?,?,?,?)";
-        String sql1 = "Select * from driver";
-        int count =0;
-        try{
-            Connection connection = ConnectData.connection();
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(sql1);
-            while (rs.next()){
-                count ++;
-            }
-            connection.close();
-            statement.close();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        try{
+       try{
             Connection connection = ConnectData.connection();
             PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setInt(1,10000+count);
+                statement.setInt(1,driver.getId());
                 statement.setString(2,driver.getName());
                 statement.setString(3,driver.getAddress());
                 statement.setString(4,driver.getPhone());
@@ -71,17 +58,24 @@ public class DriverService implements GeneralMethod{
 
     @Override
     public void show() {
+        for (Driver driver: MainRun.drivers) {
+            System.out.println(driver);
+        }
+    }
+    public void readData() {
         String sql = "Select * from driver";
         try{
             Connection connection = ConnectData.connection();
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()){
-                System.out.println("id " + rs.getInt(1));
-                System.out.println("name "+rs.getString(2));
-                System.out.println("address "+rs.getString(3));
-                System.out.println("phone "+rs.getString(4));
-                System.out.println("levele "+rs.getString(5));
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String address = rs.getString(3);
+                String phone = rs.getString(4);
+                String levele = rs.getString(5);
+                Driver driver = new Driver(id , name , address , phone , levele);
+                MainRun.drivers.add(driver);
             }
             connection.close();
             statement.close();
